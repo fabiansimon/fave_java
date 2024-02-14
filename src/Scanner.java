@@ -73,11 +73,12 @@ public class Scanner {
                 addToken(isMatch('=') ? TokenType.GREATER_EQUAL : TokenType.GREATER);
                 break;
             case '/': {
-                if (isMatch('/')) {
-                    while (peek() != '\n' && !isEnd()) advance();
-                } else {
+                if (isMatch('/'))
+                    skipLineComment();
+                else if (isMatch('*'))
+                    skipBlockComment();
+                else
                     addToken(TokenType.SLASH);
-                }
                 break;
             }
             case '"': addString(); break;
@@ -162,6 +163,20 @@ public class Scanner {
     private char peek(int skip) {
         if (curr + skip >= src.length()) return '\0';
         return src.charAt(curr + skip);
+    }
+
+    private void skipLineComment() {
+        while (peek() != '\n' && !isEnd()) advance();
+    }
+
+    private void skipBlockComment() {
+        while (peek() != '*' && peek(1) != '/' && !isEnd()) {
+            if (advance() == '\n') line++;
+        }
+        if (!isEnd()) {
+            advance();
+            advance();
+        }
     }
 
     private boolean isDigit(char c) {

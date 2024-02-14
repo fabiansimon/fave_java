@@ -5,9 +5,38 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.List;
+
 public class Fave {
     static boolean hadError = false;
     public static void main(String[] args) throws IOException {
+
+        /*
+        Expr expression = new Expr.Binary(
+                new Expr.Unary(
+                        new Token(TokenType.MINUS, "-", null, 1),
+                        new Expr.Literal(123)
+                ),
+                new Token(TokenType.STAR, "*", null, 1),
+                new Expr.Grouping(
+                        new Expr.Literal("45.67")
+                )
+            );
+
+        Expr simpleExpression = new Expr.Binary(
+                new Expr.Binary(
+                        new Expr.Literal(1),
+                        new Token(TokenType.PLUS, "+", null, 1),
+                        new Expr.Literal(2)
+                ),
+                new Token(TokenType.STAR, "*", null, 1),
+                new Expr.Binary(
+                        new Expr.Literal(4),
+                        new Token(TokenType.MINUS, "-", null, 1),
+                        new Expr.Literal(3)
+                )
+        );
+        */
+
         if (args.length > 1) {
             System.out.println("Usage: fave [script]");
         } else if (args.length == 1) {
@@ -29,7 +58,7 @@ public class Fave {
         BufferedReader reader = new BufferedReader(input);
 
         while (true) {
-            System.out.println("> ");
+            System.out.print("> ");
             String line = reader.readLine();
             if (line == null) break;
             run(line);
@@ -40,6 +69,13 @@ public class Fave {
     private static void run(String src) {
         Scanner scanner = new Scanner(src);
         List<Token> tokens = scanner.scanTokens();
+        Parser parser = new Parser(tokens);
+        Expr expr = parser.parse();
+
+        if (hadError) return;
+
+        if (true)
+            System.out.println(new ASTPrinter().print(expr));
 
         for (Token token : tokens) {
             System.out.println(token);
@@ -48,6 +84,14 @@ public class Fave {
 
      static void error(int line, String message) {
         report(line, "", message);
+    }
+
+    static void error(Token token, String errorMessage) {
+        if (token.type == TokenType.EOF) {
+            report(token.line, " at end", errorMessage);
+        } else {
+            report(token.line, " at '" + token.lexeme + "'", errorMessage);
+        }
     }
 
     static void report(int line, String location, String message) {
