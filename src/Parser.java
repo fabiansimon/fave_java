@@ -1,4 +1,5 @@
 import javax.swing.text.DefaultEditorKit;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Parser {
@@ -10,16 +11,57 @@ public class Parser {
         this.tokens = tokens;
     }
 
-    Expr parse() {
-        try {
-            return expression();
-        } catch (ParseError err) {
-            return null;
+    List<Stmt> parse() {
+        List<Stmt> statements = new ArrayList<>();
+        while (!isEnd()) {
+            statements.add(declaration());
         }
+
+        return statements;
     }
 
     private Expr expression() {
         return equality();
+    }
+
+    private Stmt declaration() {
+        try {
+            if (isMatch(TokenType.VAR)) return varDeclaration();
+
+            return statement();
+        } catch (ParseError error) {
+            synchronize();
+            return null;
+        }
+    }
+
+    private Stmt statement() {
+        if (isMatch(TokenType.PRINT)) return printStatement();
+        return expressionStatement();
+    }
+
+    private Stmt printStatement() {
+        Expr val = expression();
+        consume(TokenType.SEMICOLON, "Expect ';' after value");
+        return new Stmt.Print(val);
+    }
+
+    private Stmt varDeclaration() {
+        Token name = consume(TokenType.IDENTIFIER, "Expect variable name.");
+
+        Expr initializer = null;
+        if (isMatch(TokenType.EQUAL))
+            initializer = expression();
+
+        consume(TokenType.SEMICOLON, "Expect ';' after variable declaration");
+        return new Stmt.Var(name, initializer);
+    }
+
+    private Stmt expressionStatement() {
+        Expr expr = expression();
+        consume(TokenType.SEMICOLON, "Expect ';' after expression.");
+        return new Stmt.Expression(expr);
+
     }
 
     private Expr equality() {
@@ -91,12 +133,14 @@ public class Parser {
         if (isMatch(TokenType.NUMBER, TokenType.STRING))
             return new Expr.Literal(previous().literal);
 
+        if (isMatch(TokenType.IDENTIFIER))
+            return new Expr.Variabel(previous());
+
         if (isMatch(TokenType.LEFT_PAREN)) {
             Expr expr = expression();
             consume(TokenType.RIGHT_PAREN, "Expect ')' after expression");
             return new Expr.Grouping(expr);
         }
-
 
         throw error(peek(), "Expect expression");
     }

@@ -136,7 +136,7 @@ public class Scanner {
         while (isAlphaNumeric(peek())) advance();
 
         String str = src.substring(start, curr);
-        TokenType type = keywords.get(src);
+        TokenType type = keywords.get(str);
         if (type == null) type = TokenType.IDENTIFIER;
 
         addToken(type);
