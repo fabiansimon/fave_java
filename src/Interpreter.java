@@ -14,6 +14,13 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
+    public Object visitAssignExpr(Expr.Assign expr) {
+        Object value = evaluate(expr.value);
+        environment.assign(expr.name, value);
+        return value;
+    }
+
+    @Override
     public Object visitBinaryExpr(Expr.Binary expr) {
         Object left = evaluate(expr.left);
         Object right = evaluate(expr.right);
@@ -39,6 +46,10 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             case EQUAL_EQUAL:
                 return isEqual(left, right);
             case STAR:
+                if (left instanceof String && right instanceof Double ||
+                    left instanceof Double && right instanceof String)
+                    return mulitplyDynamicString(left, right);
+
                 checkNumberOperand(expr.operator, left, right);
                 return (double) left * (double) right;
             case SLASH:
@@ -92,7 +103,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     }
 
     @Override
-    public Object visitVariabelExpr(Expr.Variabel expr) {
+    public Object visitVariableExpr(Expr.Variable expr) {
         return environment.get(expr.name);
     }
 
@@ -117,6 +128,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
         return a instanceof String ? a + repl : repl + b;
     }
+
+    private String mulitplyDynamicString(Object a, Object b) {
+        StringBuilder string = new StringBuilder();
+        String text = "";
+        Double multiplicator = 0.0;
+        if (a instanceof Double) {
+            multiplicator = (double) a;
+            text = b.toString();
+        } else {
+            multiplicator = (double) b;
+            text = a.toString();
+        }
+
+        for (int i = 0; i < Math.floor(multiplicator); i++)
+            string.append(text);
+
+        return string.toString();
+    }
+
     public boolean isTruthful(Object object) {
         if (object == null) return false;
         if (object instanceof Boolean) return (boolean) object;
@@ -152,6 +182,25 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     private void execute(Stmt stmt) {
         stmt.accept(this);
+    }
+
+    private void executeBlock(List<Stmt> statements, Environment environment) {
+        Environment previous = this.environment;
+
+        try {
+            this.environment = environment;
+            for (Stmt statement : statements) {
+                execute(statement);
+            }
+        } finally {
+            this.environment = previous;
+        }
+    }
+
+    @Override
+    public Void visitBlockStmt(Stmt.Block stmt) {
+        executeBlock(stmt.statements, new Environment(environment));
+        return null;
     }
 
     @Override

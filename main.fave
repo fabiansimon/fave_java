@@ -1,1 +1,10 @@
-print 2 + "eljl";
+var name = "Julia";
+
+{
+    // name = "Fabian";
+    var name = "Nikki"*2;
+    print name;
+    {
+        print name = "Fabian"*3;
+    }
+}

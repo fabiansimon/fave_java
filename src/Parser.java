@@ -1,4 +1,3 @@
-import javax.swing.text.DefaultEditorKit;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +20,7 @@ public class Parser {
     }
 
     private Expr expression() {
-        return equality();
+        return assignment();
     }
 
     private Stmt declaration() {
@@ -37,6 +36,7 @@ public class Parser {
 
     private Stmt statement() {
         if (isMatch(TokenType.PRINT)) return printStatement();
+        if (isMatch((TokenType.LEFT_BRACE))) return new Stmt.Block(block());
         return expressionStatement();
     }
 
@@ -60,8 +60,37 @@ public class Parser {
     private Stmt expressionStatement() {
         Expr expr = expression();
         consume(TokenType.SEMICOLON, "Expect ';' after expression.");
-        return new Stmt.Expression(expr);
 
+        return new Stmt.Expression(expr);
+    }
+
+    private List<Stmt> block() {
+        List<Stmt> statements = new ArrayList<>();
+
+        while (!check(TokenType.RIGHT_BRACE) && !isEnd()) {
+            statements.add(declaration());
+        }
+
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after block");
+        return statements;
+    }
+
+    private Expr assignment() {
+        Expr expr = equality();
+
+        if (isMatch(TokenType.EQUAL)) {
+            Token equals = previous();
+            Expr value = assignment();
+
+            if (expr instanceof Expr.Variable) {
+                Token name = ((Expr.Variable) expr).name;
+                return new Expr.Assign(name, value);
+            }
+
+            error(equals, "Invalid assignment target.");
+        }
+
+        return expr;
     }
 
     private Expr equality() {
@@ -134,7 +163,7 @@ public class Parser {
             return new Expr.Literal(previous().literal);
 
         if (isMatch(TokenType.IDENTIFIER))
-            return new Expr.Variabel(previous());
+            return new Expr.Variable(previous());
 
         if (isMatch(TokenType.LEFT_PAREN)) {
             Expr expr = expression();
