@@ -1,8 +1,10 @@
-var a = 0;
-var temp;
+fun sayHi(first, last) {
+    var repeat = 10;
+    // print (first + " " + last + " ") * repeat;
 
-for (var b = 1; a < 10000; b = temp + b) {
-  print a;
-  temp = a;
-  a = b;
+    for (var i = 0; i < repeat; i = i + 1) {
+        print first + " " + last + " ";
+    }
 }
+
+sayHi("Fabian", "Reader");
