@@ -11,7 +11,6 @@ public class Fave {
     static boolean hadError = false;
     static boolean hadRuntimeError = false;
     public static void main(String[] args) throws IOException {
-
         /*
         Expr expression = new Expr.Binary(
                 new Expr.Unary(

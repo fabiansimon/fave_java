@@ -266,14 +266,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-        FaveFunction function = new FaveFunction(stmt);
+        FaveFunction function = new FaveFunction(stmt, environment);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
 
     @Override
     public Void visitIfStmt(Stmt.If stmt) {
-        if (isTruthful(stmt.condition)) {
+        if (isTruthful(evaluate(stmt.condition))) {
             execute(stmt.thenBranch);
         } else if (stmt.elseBranch != null) {
             execute(stmt.elseBranch);

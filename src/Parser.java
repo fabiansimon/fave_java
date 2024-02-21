@@ -39,8 +39,8 @@ public class Parser {
     private Stmt statement() {
         if (isMatch(TokenType.FOR)) return forStatement();
         if (isMatch(TokenType.IF)) return ifStatement();
-        if (isMatch(TokenType.PRINT)) return printStatement();
         if (isMatch(TokenType.RETURN)) return returnStatement();
+        if (isMatch(TokenType.PRINT)) return printStatement();
         if (isMatch(TokenType.WHILE)) return whileStatement();
         if (isMatch((TokenType.LEFT_BRACE))) return new Stmt.Block(block());
         return expressionStatement();
@@ -100,9 +100,9 @@ public class Parser {
     }
 
     private Stmt ifStatement() {
-        consume(TokenType.LEFT_PAREN, "Expect '(' after' if'.");
+        consume(TokenType.LEFT_PAREN, "Expect '(' after 'if'.");
         Expr condition = expression();
-        consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition");
+        consume(TokenType.RIGHT_PAREN, "Expect ')' after if condition.");
 
         Stmt thenBranch = statement();
         Stmt elseBranch = null;
@@ -110,7 +110,7 @@ public class Parser {
             elseBranch = statement();
         }
 
-        return new Stmt.If(condition, thenBranch ,elseBranch);
+        return new Stmt.If(condition, thenBranch, elseBranch);
     }
 
     private Stmt printStatement() {
@@ -148,7 +148,7 @@ public class Parser {
 
     private Stmt function(String kind) {
         Token name = consume(TokenType.IDENTIFIER, "Expect " + kind + " name.");
-        consume(TokenType.LEFT_PAREN ,"Expect '(', after " + kind + " nane.");
+        consume(TokenType.LEFT_PAREN ,"Expect '(', after " + kind + " name.");
         List<Token> parameters = new ArrayList<>();
         if (!check(TokenType.RIGHT_PAREN)) {
             do {
@@ -284,6 +284,9 @@ public class Parser {
         List<Expr> args = new ArrayList<>();
         if (!check(TokenType.RIGHT_PAREN)) {
             do {
+                if (args.size() >= 255) {
+                    error(peek(), "Can't have more than 255 arguments.");
+                }
                 args.add(expression());
             } while (isMatch(TokenType.COMMA));
         }
