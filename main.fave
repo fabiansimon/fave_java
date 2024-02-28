@@ -1,7 +1,3 @@
-class IceCream {
-    serveOn() {
-        return "Scones";
-    }
-}
-
-print IceCream;
+class Bagel {}
+var bagel = Bagel();
+print bagel;
