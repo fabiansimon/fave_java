@@ -26,6 +26,7 @@ public class Parser {
 
     private Stmt declaration() {
         try {
+            if (isMatch(TokenType.CLASS)) return classDeclaration();
             if (isMatch(TokenType.FUN)) return function("function");
             if (isMatch(TokenType.VAR)) return varDeclaration();
 
@@ -34,6 +35,20 @@ public class Parser {
             synchronize();
             return null;
         }
+    }
+
+    private Stmt classDeclaration() {
+        Token name = consume(TokenType.IDENTIFIER, "Exepct class name.");
+        consume(TokenType.LEFT_BRACE, "Expect '{' before class body.");
+
+        List<Stmt.Function> methods = new ArrayList<>();
+        while (!check(TokenType.RIGHT_BRACE) && !isEnd()) {
+            methods.add((Stmt.Function) function("method")); // possible bug?
+        }
+
+        consume(TokenType.RIGHT_BRACE, "Expect '}' after class body.");
+
+        return new Stmt.Class(name, methods);
     }
 
     private Stmt statement() {
