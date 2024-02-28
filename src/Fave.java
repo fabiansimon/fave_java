@@ -76,6 +76,11 @@ public class Fave {
 
         if (hadError) return;
 
+        Resolver resolver = new Resolver(interpreter);
+        resolver.resolve(statements);
+
+        if (hadError) return; // stop if there was a resolution error
+
         interpreter.interpret(statements);
     }
 
