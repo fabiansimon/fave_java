@@ -3,10 +3,18 @@ import java.util.List;
 public class FaveFunction implements FaveCallable {
     private final Stmt.Function declaration;
     private final Environment closure;
+    private final boolean isInitializer;
 
-    public FaveFunction(Stmt.Function declaration, Environment closure) {
+    public FaveFunction(Stmt.Function declaration, Environment closure, boolean isInitializer) {
         this.declaration = declaration;
         this.closure = closure;
+        this.isInitializer = isInitializer;
+    }
+
+    FaveFunction bind(FaveInstance instance) {
+        Environment environment = new Environment(closure);
+        environment.define("this", instance);
+        return new FaveFunction(declaration, environment, isInitializer);
     }
 
     @Override
@@ -29,8 +37,13 @@ public class FaveFunction implements FaveCallable {
         try {
             interpreter.executeBlock(declaration.body, environment);
         } catch (Return returnValue) {
+            if (isInitializer) return closure.getAt(0, "this");
+
             return returnValue.value;
         }
+
+
+        if (isInitializer) return closure.getAt(0, "this");
         return null;
     }
 }

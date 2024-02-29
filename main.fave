@@ -1,3 +1,10 @@
-class Bagel {}
-var bagel = Bagel();
-print bagel;
+class Cake {
+  taste() {
+    var adjective = "delicious";
+    print "The " + this.flavor + " cake is " + adjective + "!";
+  }
+}
+
+var cake = Cake();
+cake.flavor = "Austrian chocolate";
+cake.taste();

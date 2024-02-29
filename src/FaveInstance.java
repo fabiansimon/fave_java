@@ -14,7 +14,14 @@ public class FaveInstance {
             return fields.get(name.lexeme);
         }
 
+        FaveFunction method = fClass.findMethod(name.lexeme);
+        if (method != null) return method.bind(this);
+
         throw new RuntimeError(name, "Undefined property '" + name.lexeme + "'.");
+    }
+
+    void set(Token name, Object value) {
+        fields.put(name.lexeme, value);
     }
 
     @Override

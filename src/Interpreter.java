@@ -135,7 +135,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
             return ((FaveInstance) object).get(expr.name);
         }
 
-        throw new RuntimeError(expr.name, "Onlz instance have properties");
+        throw new RuntimeError(expr.name, "Only instances have properties");
     }
 
     @Override
@@ -174,6 +174,24 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         }
 
         return null;
+    }
+
+    @Override
+    public Object visitSetExpr(Expr.Set expr) {
+        Object object = evaluate(expr.object);
+
+        if (!(object instanceof FaveInstance)) {
+            throw new RuntimeError(expr.name, "Only instances have field");
+        }
+
+        Object value = evaluate(expr.value);
+        ((FaveInstance) object).set(expr.name, value);
+        return value;
+    }
+
+    @Override
+    public Object visitThisExpr(Expr.This expr) {
+        return lookUpVariable(expr.keyword, expr);
     }
 
     @Override
@@ -294,7 +312,14 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
     @Override
     public Void visitClassStmt(Stmt.Class stmt) {
         environment.define(stmt.name.lexeme, null);
-        FaveClass fClass = new FaveClass(stmt.name.lexeme);
+
+        Map<String, FaveFunction> methods = new HashMap<>();
+        for (Stmt.Function method : stmt.methods) {
+            FaveFunction function = new FaveFunction(method, environment, method.name.lexeme.equals("init"));
+            methods.put(method.name.lexeme, function);
+        }
+
+        FaveClass fClass = new FaveClass(stmt.name.lexeme, methods);
         environment.assign(stmt.name, fClass);
         return null;
     }
@@ -307,7 +332,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
 
     @Override
     public Void visitFunctionStmt(Stmt.Function stmt) {
-        FaveFunction function = new FaveFunction(stmt, environment);
+        FaveFunction function = new FaveFunction(stmt, environment, false);
         environment.define(stmt.name.lexeme, function);
         return null;
     }
