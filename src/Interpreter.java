@@ -123,7 +123,7 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         FaveCallable function = (FaveCallable) callee;
 
         if (args.size() != function.arity()) {
-            throw new RuntimeError(expr.paren, "Expect " + function.arity() + "arguments but got " + args.size() + " instead.");
+            throw new RuntimeError(expr.paren, "Expect " + function.arity() + " arguments but got " + args.size() + " instead.");
         }
         return function.call(this, args);
     }

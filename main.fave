@@ -1,14 +1,71 @@
-class Doughnut {
-  cook() {
-    print "Fry until golden brown.";
-  }
+var before = clock();
+
+class Person {
+    intro() {
+        print "Hey Welcome! ";
+    }
+    speak(phrase) {
+        print phrase;
+    }
 }
 
-class BostonCream < Doughnut {
-  cook() {
-    super.cook();
-    print "Pipe full of custard and coat with chocolate.";
-  }
+class GirlFriend < Person {
+    init(firstName, lastName, alias, age) {
+        this.name = firstName + " " + lastName;
+        this.alias = alias;
+        this.age = age;
+    }
+
+    getDescription() {
+        return "My name is " + this.name + " and I'm " + this.age + " years old";
+    }
+
+    speak() {
+        super.intro();
+        super.speak(this.getDescription());
+    }
 }
 
-BostonCream().cook();
+
+/////// MAIN START ///////
+
+var gf = GirlFriend("Julia", "Chovookkaran", "Fave", 24);
+
+fun ageByYears(years, person) {
+    for (var i = 0; i < years; i = i + 1) {
+        person.age = person.age + 1;
+    }
+}
+
+fun addEmoji(string) {
+    return string + " :)";
+}
+
+ageByYears(20, gf);
+gf.name = addEmoji(gf.name);
+
+////// TEST //////
+
+fun test(testName, curr, target) {
+    var result = curr == target;
+    if (result == true) {
+        result = "true";
+    } else {
+        result = "false";
+    }
+
+    print "Test " + testName + ": " + result;
+}
+
+var finalName = "Julia Chovookkaran :)";
+var finalAge = 44;
+var finalSpeech = "Hey Welcome!
+                   My name is Julia Chovookkaran and I'm 24 years old";
+
+test("NAME", gf.name, finalName);
+test("AGE", gf.age, finalAge);
+
+/////// TIME //////
+
+var after = clock();
+print after - before;
