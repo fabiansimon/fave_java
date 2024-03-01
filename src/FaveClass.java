@@ -3,9 +3,11 @@ import java.util.Map;
 
 public class FaveClass implements FaveCallable {
     final String name;
+    final FaveClass superclass;
     private final Map<String, FaveFunction> methods;
 
-    public FaveClass(String name, Map<String, FaveFunction> methods) {
+    public FaveClass(String name, Map<String, FaveFunction> methods, FaveClass superclass) {
+        this.superclass = superclass;
         this.name = name;
         this.methods = methods;
     }
@@ -13,6 +15,10 @@ public class FaveClass implements FaveCallable {
     FaveFunction findMethod(String name) {
         if (methods.containsKey(name)) {
             return methods.get(name);
+        }
+
+        if (superclass != null) {
+            return superclass.findMethod(name);
         }
 
         return null;

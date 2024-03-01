@@ -51,6 +51,11 @@ public class ASTPrinter implements Expr.Visitor<String> {
     }
 
     @Override
+    public String visitSuperExpr(Expr.Super expr) {
+        return null;
+    }
+
+    @Override
     public String visitThisExpr(Expr.This expr) {
         return null;
     }
