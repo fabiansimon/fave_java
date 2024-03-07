@@ -14,6 +14,7 @@ abstract class Expr {
     R visitSuperExpr(Super expr);
     R visitThisExpr(This expr);
     R visitVariableExpr(Variable expr);
+    R visitMappedAssignExpr(Mapped expr);
   }
 
   static class Assign extends Expr {
@@ -194,6 +195,21 @@ abstract class Expr {
     }
 
     final Token name;
+  }
+
+  static class Mapped extends Expr {
+    Mapped(Expr left, Token operator, Expr right) {
+      this.left = left;
+      this.operator = operator;
+      this.right = right;
+    }
+
+    @Override
+    <R> R accept(Visitor<R> visitor) { return visitor.visitMappedAssignExpr(this); }
+
+    final Expr left;
+    final Token operator;
+    final Expr right;
   }
 
   abstract <R> R accept(Visitor<R> visitor);

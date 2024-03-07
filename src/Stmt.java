@@ -2,6 +2,7 @@ import java.util.List;
 
 abstract class Stmt {
   interface Visitor<R> {
+
     R visitBlockStmt(Block stmt);
     R visitClassStmt(Class stmt);
     R visitExpressionStmt(Expression stmt);

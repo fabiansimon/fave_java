@@ -214,6 +214,11 @@ public class Interpreter implements Expr.Visitor<Object>, Stmt.Visitor<Void> {
         return lookUpVariable(expr.name, expr);
     }
 
+    @Override
+    public Object visitMappedAssignExpr(Expr.Mapped expr) {
+        return null;
+    }
+
     private Object lookUpVariable(Token name, Expr expr) {
         Integer distance = locals.get(expr);
         if (distance != null) {

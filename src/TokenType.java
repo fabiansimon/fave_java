@@ -8,6 +8,7 @@ public enum TokenType {
     EQUAL, EQUAL_EQUAL,
     GREATER, GREATER_EQUAL,
     LESS, LESS_EQUAL,
+    MIN, MAX,
 
     // Literals.
     IDENTIFIER, STRING, NUMBER,

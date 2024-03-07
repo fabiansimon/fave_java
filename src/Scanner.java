@@ -22,6 +22,8 @@ public class Scanner {
         put("true",   TokenType.TRUE);
         put("var",    TokenType.VAR);
         put("while",  TokenType.WHILE);
+        put("min",  TokenType.MIN);
+        put("max",  TokenType.MAX);
     }};
     private int start = 0;
     private int curr = 0;
@@ -170,13 +172,10 @@ public class Scanner {
     }
 
     private void skipBlockComment() {
-        while (peek() != '*' && peek(1) != '/' && !isEnd()) {
+        while (!isEnd() && !(peek() == '*' && peek(1) == '/')) {
             if (advance() == '\n') line++;
         }
-        if (!isEnd()) {
-            advance();
-            advance();
-        }
+        if (!isEnd()) curr += 2;
     }
 
     private boolean isDigit(char c) {

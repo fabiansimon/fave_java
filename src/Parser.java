@@ -202,7 +202,18 @@ public class Parser {
     private Expr assignment() {
         Expr expr = or();
 
-        if (isMatch(TokenType.EQUAL)) {
+        if (isMatch(TokenType.MIN, TokenType.MAX)) {
+            Token map = previous();
+            Expr comparator = assignment();
+
+            if (expr instanceof Expr.Variable) {
+                return new Expr.Mapped(expr, map, comparator);
+            }
+
+            error(map, "Invalid mapped assignment option.");
+        }
+
+        if (isMatch(TokenType.EQUAL, TokenType.MIN, TokenType.MAX)) {
             Token equals = previous();
             Expr value = assignment();
 

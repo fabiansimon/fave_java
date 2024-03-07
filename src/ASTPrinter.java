@@ -65,6 +65,11 @@ public class ASTPrinter implements Expr.Visitor<String> {
         return null;
     }
 
+    @Override
+    public String visitMappedAssignExpr(Expr.Mapped expr) {
+        return null;
+    }
+
 
     private String parenthesize(String name, Expr ...exprs) {
         StringBuilder output = new StringBuilder();
